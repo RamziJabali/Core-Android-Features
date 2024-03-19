@@ -1,5 +1,3 @@
-package io.etip.mobile.android.claimroom.viewmodel
-
 import android.app.Application
 import android.content.ContentValues
 import android.net.Uri
