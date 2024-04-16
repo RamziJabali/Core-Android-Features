@@ -59,3 +59,6 @@ fun ScaffoldForSnackBar() {
     }
 }
 ```
+
+This example is done showcasing the use of SnackBar action button when handling notifications
+
