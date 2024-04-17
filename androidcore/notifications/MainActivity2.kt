@@ -37,15 +37,19 @@ class MainActivity2 : ComponentActivity() {
                 viewModel.userStateFlow.collectLatest { userState ->
                     setContent {
                         AndroidCoreTheme {
+                            // State hoisting
                             SimpleTextBoxView(
                                 checkText = viewModel::checkIfUserTextMatches,
-                                userClickedActionSnackbar = viewModel::userClickedActionOnSnackbar,
-                                userClickedDismissSnackbar = viewModel::userClickedDismissOnSnackbar,
+                                userClickedActionSnackBar = viewModel::userClickedActionOnSnackBar,
+                                userClickedDismissSnackBar = viewModel::userClickedDismissSnackBar,
                                 userState.failureMessage,
                                 userState.showRationale,
                                 userState.rationaleMessage
                             )
+                            // Checking user input
                             if (userState.didUserGetTextRightPersonal || userState.didUserGetTextRightWork) {
+                                Log.d("Log.d", "Correct Text Main")
+                                // Checking permissions
                                 if (checkPermissionStatus()) {
                                     notification.notifyUser(
                                         userState.didUserGetTextRightPersonal,
@@ -55,7 +59,7 @@ class MainActivity2 : ComponentActivity() {
                             }
                             if (userState.didUserClickActionSnackbar) {
                                 openSettings()
-                                viewModel.resetSnackBar()
+                                viewModel.resetViewState()
                             }
                         }
                     }
@@ -72,18 +76,18 @@ class MainActivity2 : ComponentActivity() {
                 this,
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED -> {
-                Log.i("Permission", "Permission Already Granted")
+                Log.d("Log.d", "Permission Already Granted")
                 return true
             }
 
             shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                Log.i("Permission", "Showing Request Rationale")
+                Log.d("Log.d", "Showing Request Rationale")
                 viewModel.showRationale()
                 return false
             }
 
             else -> {
-                Log.i("Permission", "Asking user to grant permission")
+                Log.d("Log.d", "Asking user to grant permission")
                 return askForPermission()
             }
         }
@@ -97,9 +101,9 @@ class MainActivity2 : ComponentActivity() {
             ActivityResultContracts.RequestPermission(),
         ) { isGranted: Boolean ->
             if (!isGranted) {
-                Log.i("Permission", "Permission has been denied")
+                Log.d("Log.d", "Permission has been denied")
             } else {
-                Log.i("Permission", "Permission has been granted")
+                Log.d("Log.d", "Permission has been granted")
             }
             isGrantedPermission = isGranted
         }
