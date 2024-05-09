@@ -168,6 +168,39 @@ override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
 4. Create notifications and notification channels
     - Notification channels can be created in a seprate class and initialized on onCreate()
+    - My notification includes Pending Intents
+
+
+    * The first PendingIntent(Action that will take place at a later time) makes it so if the user clicks on the notification the MainActivity::class.java is started
+        * `PendingIntent.getActivity()` ~ It is used to create a PendingIntent that will start an activity when triggered.
+        * This happens because we pass it an Intent `Intent(this, MainActivity::class.java)` to start the MainActivity::class
+        * `PendingIntent.FLAG_IMMUTABLE` This flag indicates that the PendingIntent should be immutable, meaning that its configuration cannot be changed after it is created. 
+
+```
+private val pendingIntent: PendingIntent by lazy {
+        PendingIntent.getActivity(
+            this, 0, Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+```
+
+    * The Second PendingIntent(Action that will take place at a later time) makes it so if the user clicks on the notification action button the service is stopped
+        * `PendingIntent.getService()` ~ Similar to getActivity(), it is used to create a PendingIntent, but instead of starting an activity, it starts a service when triggered. 
+        * This happens because we pass it an Intent `Intent(this, ForegroundService::class.java).apply {action = Actions.STOP.name}` to start the ForegroundService::class.java
+        * `PendingIntent.FLAG_IMMUTABLE` This flag indicates that the PendingIntent should be immutable, meaning that its configuration cannot be changed after it is created. 
+        * Recall `onStartCommand()` contains an expression that evaluates what is passed into the intent
+
+```
+    private val stopServicePendingIntent: PendingIntent by lazy {
+        PendingIntent.getService(
+            this, 0, Intent(this, ForegroundService::class.java).apply {
+                action = Actions.STOP.name
+            },
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+```
 
 ```
 private fun getNotification() =
@@ -188,4 +221,5 @@ private fun getNotification() =
                 stopServicePendingIntent
             )
             .build()
-``` 
+```
+
