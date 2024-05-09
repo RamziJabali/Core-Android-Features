@@ -125,3 +125,67 @@ fun SimpleTextBoxView(
 }
 ```
 
+## Foreground Service with persistant notification
+
+### how to start a foreground service
+
+1. Create Foreground Service class
+ 
+```
+class ForegroundService : Service() { ... }
+```
+
+2. Add to manifest
+    - You will have to Define it in the manifest
+    - Your foreground service can be of a different type, mine is a location foreground service
+
+```
+     <service
+            android:foregroundServiceType="location"
+            android:exported="false"
+            android:name=".loactionservice.ForegroundService">
+     </service>
+```
+
+3. Override onStartCommand function
+
+```
+override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            Actions.START.toString() -> {
+                Log.i("ForegroundService::Class", "Starting service")
+                start()
+            }
+            Actions.STOP.toString() -> {
+                Log.i("ForegroundService::Class", "Stopping service")
+                stop()
+            }
+        }
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+```
+
+4. Create notifications and notification channels
+    - Notification channels can be created in a seprate class and initialized on onCreate()
+
+```
+private fun getNotification() =
+        NotificationCompat.Builder(applicationContext, CHANNEL_ID_1)
+            .setSmallIcon(R.mipmap.just_jog_icon_foreground)
+            .setContentTitle(ContextCompat.getString(applicationContext, R.string.just_jog))
+            .setContentText(ContextCompat.getString(applicationContext, R.string.notification_text))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setOngoing(true)
+            .setAutoCancel(false)
+            .setStyle(NotificationCompat.BigTextStyle())
+            // Set the intent that fires when the user taps the notification.
+            .setContentIntent(pendingIntent)
+            .addAction(
+                R.mipmap.cross_monochrome,
+                getString(R.string.stop_jog),
+                stopServicePendingIntent
+            )
+            .build()
+``` 
