@@ -185,11 +185,11 @@ private val pendingIntent: PendingIntent by lazy {
     }
 ```
 
-    * The Second PendingIntent(Action that will take place at a later time) makes it so if the user clicks on the notification action button the service is stopped
-        * `PendingIntent.getService()` ~ Similar to getActivity(), it is used to create a PendingIntent, but instead of starting an activity, it starts a service when triggered. 
-        * This happens because we pass it an Intent `Intent(this, ForegroundService::class.java).apply {action = Actions.STOP.name}` to start the ForegroundService::class.java
-        * `PendingIntent.FLAG_IMMUTABLE` This flag indicates that the PendingIntent should be immutable, meaning that its configuration cannot be changed after it is created. 
-        * Recall `onStartCommand()` contains an expression that evaluates what is passed into the intent
+* The Second PendingIntent(Action that will take place at a later time) makes it so if the user clicks on the notification action button the service is stopped
+    * `PendingIntent.getService()` ~ Similar to getActivity(), it is used to create a PendingIntent, but instead of starting an activity, it starts a service when triggered. 
+    * This happens because we pass it an Intent `Intent(this, ForegroundService::class.java).apply {action = Actions.STOP.name}` to start the ForegroundService::class.java
+    * `PendingIntent.FLAG_IMMUTABLE` This flag indicates that the PendingIntent should be immutable, meaning that its configuration cannot be changed after it is created. 
+    * Recall `onStartCommand()` contains an expression that evaluates what is passed into the intent
 
 ```
     private val stopServicePendingIntent: PendingIntent by lazy {
