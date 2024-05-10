@@ -311,7 +311,7 @@ There are three components to creating a Room database
 
 ### Now that we have the basic understanding down, let's get started:
 
-1. Create an entity for your project:
+1. Create an entity for your table:
     * You have to annotate your data class with the `@Entity or @Entity("jog_entries")`
         * You are defining this data class as an entity for your DAO, and you can decide to label your table
         * You have to define a primary key for your entity via the `@PrimaryKey()` annotation, you can also have it so the keys are autogenrated.
