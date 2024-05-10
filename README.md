@@ -336,3 +336,4 @@ data class JogEntry(
 2. Create a DAO for your entites
 
 
+
