@@ -148,15 +148,17 @@ class ForegroundService : Service() { ... }
 ```
 
 3. Override onStartCommand function
+    * You can define an expression to handle the different actions tht are permitted within your service
+    * In this case I have an actions enum defined with the service `enum class Actions { START, STOP}`
 
 ```
 override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            Actions.START.toString() -> {
+            Actions.START.name -> {
                 Log.i("ForegroundService::Class", "Starting service")
                 start()
             }
-            Actions.STOP.toString() -> {
+            Actions.STOP.name -> {
                 Log.i("ForegroundService::Class", "Stopping service")
                 stop()
             }
@@ -222,4 +224,78 @@ private fun getNotification() =
             )
             .build()
 ```
+
+5. Define your logic that is used when your service is started
+    * Using a LocationManager and LocationListener
+      
+```
+private val locationManager by lazy {
+        ContextCompat.getSystemService(application, LocationManager::class.java) as LocationManager
+    }
+
+    private val locationListener: LocationListener by lazy {
+        LocationListener { location ->
+            Log.d(
+                "ForegroundService::Class",
+                "Time:${ZonedDateTime.now()}\nLatitude: ${location.latitude}, Longitude:${location.longitude}"
+            )
+        }
+    }
+```
+
+
+```
+ private fun stop() {
+        locationManager.removeUpdates(locationListener)
+        stopSelf()
+    }
+
+    private fun start() {
+        Log.i("ForegroundService::Class", "Checking permissions")
+        for (permission in permissions.list) {
+            val currentPermission = ContextCompat.checkSelfPermission(this, permission)
+            if (currentPermission == PackageManager.PERMISSION_DENIED) {
+                // Without these permissions the service cannot run in the foreground
+                // Consider informing user or updating your app UI if visible.
+                Log.d("ForegroundService::Class", "Permissions were not given, stopping service!")
+                stopSelf()
+            }
+        }
+
+        try {
+            ServiceCompat.startForeground(
+                this,
+                NOTIFICATION_ID, // Cannot be 0
+                getNotification(),
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+                } else {
+                    0
+                },
+            )
+            // getting user location
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                LOCATION_REQUEST_INTERVAL_MS,
+                0F,
+                locationListener
+            )
+        } catch (e: Exception) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                && e is ForegroundServiceStartNotAllowedException
+            ) {
+                // App not in a valid state to start foreground service
+                // (e.g. started from bg)
+                Log.d("ForegroundService::Class", e.message.toString())
+            }
+        }
+    }
+```
+7. You have now defined a general skeleton for your foreground service
+    * You created a means to handle intents to start your foreground service
+    * You created your own notification
+    * You created pending intents to go with your notification
+        * Starts MainActivity::Class.java and stops the foreground service    
+    * You created logic that is executed when the service is started
+
 
