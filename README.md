@@ -335,5 +335,29 @@ data class JogEntry(
 
 2. Create a DAO for your entites
 
+    * The DAO(data access object) provides methods that the rest of your application uses to interact with your table.
+        * So in this case my `JogEntryDAO` has multiple methods that will be used to interact with my `jog_entries` table previously defined.
+     
+```
+@Dao
+interface JogEntryDAO {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addUpdateWorkout(jogEntries: JogEntry): CompletableDeferred<Unit>
 
+    @Query("SELECT * FROM jog_entries")
+    suspend fun getAll(): Flow<List<JogEntry>>
 
+    @Query("SELECT * FROM jog_entries WHERE date_time LIKE (:stringDate)")
+    suspend fun getByDate(stringDate: String): Flow<List<JogEntry>?>
+
+    @Query("SELECT * FROM jog_entries WHERE date_time BETWEEN (:startDate) AND (:endDate)")
+    suspend fun getByRangeOfDates(startDate: String, endDate: String): Flow<List<JogEntry>>
+
+    @Query("SELECT * FROM jog_entries WHERE jog_summary_id IS :jogId")
+    suspend fun getByID(jogId: Int): Flow<List<JogEntry?>>
+
+    @Query("DELETE FROM jog_entries")
+    suspend fun deleteAll(): CompletableDeferred<Unit>
+}
+```
+ 
