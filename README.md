@@ -333,7 +333,7 @@ data class JogEntry(
 )
 ```
 
-2. Create a DAO for your entites
+2. Create a DAO for your table
 
     * The DAO(data access object) provides methods that the rest of your application uses to interact with your table.
         * So in this case my `JogEntryDAO` has multiple methods that will be used to interact with my `jog_entries` table previously defined.
@@ -359,5 +359,46 @@ interface JogEntryDAO {
     @Query("DELETE FROM jog_entries")
     suspend fun deleteAll(): CompletableDeferred<Unit>
 }
+```
+
+* You could have a usecase class that transforms values returned from your DAO and can transorm values required for your DAO.
+
+3. Create your Database
+
+    1. Class creation
+        * Create an abstract class that extends `RoomDatabase`, ex: `abstract class AppDatabase : RoomDatabase()`
+        * Annotate your class with the `@Database()` annotation and provide it with all your entities and a * version number: `@Database(entities = [JogEntryDAO::class], version = 1)`
+    
+    2. Within the class
+        * Define abstract functions for all your available DAO's: `abstract fun jogEntryDao(): JogEntryDAO`
+    
+    3. Refrence your database for usage
+        * Use Rooms `databaseBuilder()` to create your database object
+        * ```
+          val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "just-jog-database")
+          .build()
+          ```
+        * I prefer to do this with dependency injection framework like Koin.
+
+```
+@Database(entities = [JogEntryDAO::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun jogEntryDao(): JogEntryDAO
+}
+```
+
+4. Use your database
+
+```
+val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "just-jog-database")
+          .build()
+
+val jogEntryDao = db.jogEntryDao()
+val users: List<User> = jogEntryDao.getAll()
+
 ```
  
