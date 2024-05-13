@@ -401,4 +401,43 @@ val jogEntryDao = db.jogEntryDao()
 val users: List<User> = jogEntryDao.getAll()
 
 ```
- 
+
+5. Example:
+
+   * Mock View Model to simulate an actual application
+   * Pass it a dao refrence or a usecase refrence to be able to make calls to and from the database
+   * Using a `CompletableDeferred` makes it so I know that the process completed successfully 
+     ```
+     class MockVM(private val dao: JogEntryDAO): ViewModel {
+   
+     fun addJog(jogEntry: JogEntry) {
+        val deferred = CompletableDeferred<Unit>()
+
+        val job = viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    delay(3000)
+                    dao.addUpdateWorkout(jogEntry)
+                }
+                deferred.complete(Unit)
+                Log.d("MockVM::Class.java", "added Jog: $deferred")
+            } catch (e: CancellationException) {
+                Log.d("MockVM::Class.java", "Coroutine canceled: ${e.message}")
+                // Handle cancellation if needed
+            }
+        }
+
+        deferred.invokeOnCompletion { cause ->
+            if (cause != null) {
+                if (cause is CancellationException) {
+                    Log.d("MockVM::Class.java", "Coroutine canceled: ${cause.message}")
+                } else {
+                    Log.e("MockVM::Class.java", "Coroutine failed with: $cause")
+                }
+                job.cancel() // Cancel the job explicitly
+            }
+        }
+      }
+     }
+     ```
+
