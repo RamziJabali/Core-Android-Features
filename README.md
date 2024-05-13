@@ -482,8 +482,8 @@ vm.getAllJogs()
 
 LogCat
 ```
-added Jog: true
-getAllJogs: [JogEntry(id=1, jogSummaryId=0, dateTime=, latitude=0.0, longitude=0.0)]
+2024-05-13 13:42:03.554 17739-17763 MockVM::Class.java      ramzi.eljabali.justjog               D  addJog: true
+2024-05-13 13:42:03.850 17739-17763 MockVM::Class.java      ramzi.eljabali.justjog               D  getAllJogs: [JogEntry(id=1, jogSummaryId=0, dateTime=, latitude=0.0, longitude=0.0)]
 ```
 
 
