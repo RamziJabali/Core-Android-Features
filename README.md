@@ -435,9 +435,10 @@ val users: List<User> = jogEntryDao.getAll()
                     Log.e("MockVM::Class.java", "Coroutine failed with: $cause")
                 }
                 job.cancel() // Cancel the job explicitly
+                }
             }
-        }
-      }
+         }
      }
-     ```
+   
+```
 
