@@ -406,8 +406,9 @@ val users: List<User> = jogEntryDao.getAll()
 
    * Mock View Model to simulate an actual application
    * Pass it a dao refrence or a usecase refrence to be able to make calls to and from the database
-   * Using a `CompletableDeferred` makes it so I know that the process completed successfully 
-     ```
+   * Using a `CompletableDeferred` makes it so I know that the process completed successfully or failed exceptionally
+
+```
      class MockVM(private val dao: JogEntryDAO): ViewModel {
    
      fun addJog(jogEntry: JogEntry) {
@@ -416,7 +417,6 @@ val users: List<User> = jogEntryDao.getAll()
         val job = viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    delay(3000)
                     dao.addUpdateWorkout(jogEntry)
                 }
                 deferred.complete(Unit)
@@ -438,7 +438,52 @@ val users: List<User> = jogEntryDao.getAll()
                 }
             }
          }
+
+      fun getAllJogs() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val list = viewModelScope.async { dao.getAll() }.await()
+                list.collect {
+                    Log.d("MockVM::Class.java", "getAllJogs: $it")
+                    }
+                }
+            }
+        }
      }
    
 ```
+
+* Within your `MainActivity` you can have a refrence to your `MockVM` and call the `getAllJogs()` function
+   
+```
+override fun onCreate(){
+vm.getAllJogs()
+     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val db = Room.databaseBuilder(
+            applicationContext,
+            JustJogDataBase::class.java, "just-jog-database"
+        )
+            .build()
+        val vm = MockVM(db.jogEntryDao())
+        vm.addJog(
+            JogEntry(
+                id = 0, jogSummaryId = 0, dateTime = "", latitude = 0.0, longitude = 0.0
+            )
+        )
+
+        vm.getAllJogs()
+}
+```
+  
+
+### Result:
+
+LogCat
+```
+added Jog: true
+getAllJogs: [JogEntry(id=1, jogSummaryId=0, dateTime=, latitude=0.0, longitude=0.0)]
+```
+
 
