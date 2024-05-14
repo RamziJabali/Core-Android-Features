@@ -414,11 +414,9 @@ val users: List<User> = jogEntryDao.getAll()
      fun addJog(jogEntry: JogEntry) {
         val deferred = CompletableDeferred<Unit>()
 
-        val job = viewModelScope.launch {
+        val job = viewModelScope.launch(Dispatchers.IO)  {
             try {
-                withContext(Dispatchers.IO) {
-                    dao.addUpdateWorkout(jogEntry)
-                }
+                dao.addUpdateWorkout(jogEntry)
                 deferred.complete(Unit)
                 Log.d("MockVM::Class.java", "added Jog: $deferred")
             } catch (e: CancellationException) {
@@ -440,8 +438,7 @@ val users: List<User> = jogEntryDao.getAll()
          }
 
       fun getAllJogs() {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+          viewModelScope.launch(Dispatchers.IO){ 
                 val list = viewModelScope.async { dao.getAll() }.await()
                 list.collect {
                     Log.d("MockVM::Class.java", "getAllJogs: $it")
