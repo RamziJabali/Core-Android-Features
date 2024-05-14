@@ -58,6 +58,15 @@ class MvvmViewModel(
       }
    }
 }
+
+@Composable
+fun MvvmScreen(
+   postDetails: Post?,
+   isLoading: Boolean,
+   isPostLiked: Boolean,
+   onToggleLike: () -> Unit,
+   onBackCLick: () -> Unit
+){....}
 ```
 
 ### Example MVI
@@ -89,6 +98,20 @@ class MvvmViewModel(
       }
    }
 }
+
+data class MviState(
+   val postDetails: Post? = null,
+   val isLoading: Boolean = false,
+   val isPostLiked: Boolean = false,
+   val email: String = "",
+   val isEmailValid: Boolean
+)
+
+@Composable
+fun MviScreen(
+   state: MviState,
+   onAction: (MviAction) -> Unit
+){....}
 ```
 
 ### Summary
