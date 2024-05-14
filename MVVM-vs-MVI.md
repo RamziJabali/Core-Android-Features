@@ -91,6 +91,13 @@ class MvvmViewModel(
 }
 ```
 
+### Summary
+
+The diffrence is state encapsulation and the way the state is packaged and delivered to the view.
+
+### What would I be choosing and why?
+
+MVI - Because it allows for state encapsulation and much more legible code. It's also a lot more predictible due to the single source of truth.
 
 
 
