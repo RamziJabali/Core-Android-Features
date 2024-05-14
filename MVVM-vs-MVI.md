@@ -1,15 +1,15 @@
 # MVVM vs MVI
 
-## What are they
+## What are they?
 
-1.MVVM = Model View View Model , MVI = Model View Intent
-2.  They are both presentational patterns
+* MVVM = Model View View Model , MVI = Model View Intent
+*  They are both presentational patterns
     * Meant to separte your presentation layer into different parts
 
-## What is a model
+## What is the model?
 
-1. The implement thoe business rules and business logic
-2. They implement project wide requirements
+* The implement the business rules and business logic
+* They implement project wide requirements
     * Ex:
     * ```
       data class User(
@@ -18,3 +18,79 @@
         val email: String
       )
       ```
+* These data classes are models and are shared between both MVVM and MVI
+
+
+## What is the view?
+
+* The view would also be the same and it would be a composable or an XML view
+
+## ViewModel vs Intent?
+
+* MVVM has ViewModel as a part of it's abbreviation and MVI has Intent
+   * Though on Android they will both most likey both be done with a viewmodel.
+* The job of the viewmodel is to contain state mapping logic
+   * It processes incoming UI actions like a button click or refresh swipe and then decides based on the action how the state looks like afterwards. Like showing loading indicator which really dumbs down the view.
+
+* The model the view and the viewmode, in most cases, is the same between both patterns.
+
+## So what is the difference?
+
+### MVVM has multiple state fields, vs MVI which has one state field or a single source of truth.
+
+### Example MVVM
+
+```
+class MvvmViewModel(
+   private val savedStateHandle: SavedStateHandle): ViewModel() {
+   var postDetails by mutableStateOf<Post?>(null)
+      private set
+
+   var isLoading by mutableStateOf(false)
+      private set
+
+   var isPostLiked by mutableStateOf(false)
+      private set
+
+   init {
+      savedStateHandle.get<String>("postId")?.let { postId ->
+         loadPost(postId)
+      }
+   }
+}
+```
+
+### Example MVI
+
+```
+class MvvmViewModel(
+   private val savedStateHandle: SavedStateHandle): ViewModel() {
+   var state by mutableStateOf(MviState())
+      private set
+
+   init {
+      savedStateHandle.get<String>("postId")?.let { postId ->
+         loadPost(postId)
+      }
+   }
+
+   fun onAction(action: Action){
+      when(action) {
+         MviAction.ToggleLike -> toggleLike()
+         else -> Unit
+      }
+   }
+
+   fun toggleLike(){
+      state.postDetails?.let{
+         state.update { prevState->
+            prevState.copy(isliked = !prevState.isLiked)
+         }
+      }
+   }
+}
+```
+
+
+
+
