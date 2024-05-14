@@ -107,6 +107,11 @@ data class MviState(
    val isEmailValid: Boolean
 )
 
+sealed interface MviAction {
+   data object ToggleLike: MviAction
+   data object GoBack: MviAction
+}
+
 @Composable
 fun MviScreen(
    state: MviState,
