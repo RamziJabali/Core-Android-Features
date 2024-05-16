@@ -11,7 +11,7 @@
 * The implement the business rules and business logic
 * They implement project wide requirements
     * Ex:
-    * ```
+    * ```kotlin
       data class User(
         val id: Int,
         val name: String,
@@ -32,7 +32,7 @@
 * The job of the viewmodel is to contain state mapping logic
    * It processes incoming UI actions like a button click or refresh swipe and then decides based on the action how the state looks like afterwards. Like showing loading indicator which really dumbs down the view.
 
-* The model the view and the viewmode, in most cases, is the same between both patterns.
+* The model, the view, and the viewmodel(in most cases) is the same between both patterns.
 
 ## So what is the difference?
 
@@ -40,7 +40,7 @@
 
 ### Example MVVM
 
-```
+```kotlin
 class MvvmViewModel(
    private val savedStateHandle: SavedStateHandle): ViewModel() {
    var postDetails by mutableStateOf<Post?>(null)
@@ -71,7 +71,7 @@ fun MvvmScreen(
 
 ### Example MVI
 
-```
+```kotlin
 class MvvmViewModel(
    private val savedStateHandle: SavedStateHandle): ViewModel() {
    var state by mutableStateOf(MviState())
