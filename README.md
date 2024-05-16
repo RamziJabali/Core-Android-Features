@@ -4,7 +4,7 @@
 
 This example shows how to display a SnackBar from a floating action button
 
-```
+```kotlin
 @Composable
 fun ScaffoldForSnackBar() {
     val coroutineScope = rememberCoroutineScope() // To launch your corotines
@@ -62,7 +62,7 @@ fun ScaffoldForSnackBar() {
 
 This example is done showcasing the use of SnackBar action button when handling notifications
 
-```
+```kotlin
 @Composable
 fun SimpleTextBoxView(
     checkText: (text: String) -> Unit,
@@ -131,7 +131,7 @@ fun SimpleTextBoxView(
 
 1. Create Foreground Service class
  
-```
+```kotlin
 class ForegroundService : Service() { ... }
 ```
 
@@ -139,7 +139,7 @@ class ForegroundService : Service() { ... }
     - You will have to Define it in the manifest
     - Your foreground service can be of a different type, mine is a location foreground service
 
-```
+```manifest
      <service
             android:foregroundServiceType="location"
             android:exported="false"
@@ -151,7 +151,7 @@ class ForegroundService : Service() { ... }
     * You can define an expression to handle the different actions tht are permitted within your service
     * In this case I have an actions enum defined with the service `enum class Actions { START, STOP}`
 
-```
+```kotlin
 override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             Actions.START.name -> {
@@ -178,7 +178,7 @@ override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         * This happens because we pass it an Intent `Intent(this, MainActivity::class.java)` to start the MainActivity::class
         * `PendingIntent.FLAG_IMMUTABLE` This flag indicates that the PendingIntent should be immutable, meaning that its configuration cannot be changed after it is created. 
 
-```
+```kotlin
 private val pendingIntent: PendingIntent by lazy {
         PendingIntent.getActivity(
             this, 0, Intent(this, MainActivity::class.java),
@@ -193,7 +193,7 @@ private val pendingIntent: PendingIntent by lazy {
     * `PendingIntent.FLAG_IMMUTABLE` This flag indicates that the PendingIntent should be immutable, meaning that its configuration cannot be changed after it is created. 
     * Recall `onStartCommand()` contains an expression that evaluates what is passed into the intent
 
-```
+```kotlin
     private val stopServicePendingIntent: PendingIntent by lazy {
         PendingIntent.getService(
             this, 0, Intent(this, ForegroundService::class.java).apply {
@@ -204,7 +204,7 @@ private val pendingIntent: PendingIntent by lazy {
     }
 ```
 
-```
+```kotlin
 private fun getNotification() =
         NotificationCompat.Builder(applicationContext, CHANNEL_ID_1)
             .setSmallIcon(R.mipmap.just_jog_icon_foreground)
@@ -228,7 +228,7 @@ private fun getNotification() =
 5. Define your logic that is used when your service is started
     * Using a LocationManager and LocationListener
       
-```
+```kotlin
 private val locationManager by lazy {
         ContextCompat.getSystemService(application, LocationManager::class.java) as LocationManager
     }
@@ -244,7 +244,7 @@ private val locationManager by lazy {
 ```
 
 
-```
+```kotlin
  private fun stop() {
         locationManager.removeUpdates(locationListener)
         stopSelf()
@@ -317,7 +317,7 @@ There are three components to creating a Room database
         * You have to define a primary key for your entity via the `@PrimaryKey()` annotation, you can also have it so the keys are autogenrated.
         * You can optionally have different names for your columns by using `@ColumnInfo(name = "id")` which sets a custom names for a table and it's columns
            
-```
+```kotlin
 @Entity("jog_entries")
 data class JogEntry(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id")
@@ -338,7 +338,7 @@ data class JogEntry(
     * The DAO(data access object) provides methods that the rest of your application uses to interact with your table.
         * So in this case my `JogEntryDAO` has multiple methods that will be used to interact with my `jog_entries` table previously defined.
      
-```
+```kotlin
 @Dao
 interface JogEntryDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -382,7 +382,7 @@ interface JogEntryDAO {
           ```
         * I prefer to do this with dependency injection framework like Koin.
 
-```
+```kotlin
 @Database(entities = [JogEntryDAO::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun jogEntryDao(): JogEntryDAO
@@ -391,7 +391,7 @@ abstract class AppDatabase : RoomDatabase() {
 
 4. Use your database
 
-```
+```kotlin
 val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "just-jog-database")
@@ -408,7 +408,7 @@ val users: List<User> = jogEntryDao.getAll()
    * Pass it a dao refrence or a usecase refrence to be able to make calls to and from the database
    * Using a `CompletableDeferred` makes it so I know that the process completed successfully or failed exceptionally
 
-```
+```kotlin
      class MockVM(private val dao: JogEntryDAO): ViewModel {
    
      fun addJog(jogEntry: JogEntry) {
@@ -452,7 +452,7 @@ val users: List<User> = jogEntryDao.getAll()
 
 * Within your `MainActivity` you can have a refrence to your `MockVM` and call the `getAllJogs()` function
    
-```
+```kotlin
 override fun onCreate(){
 vm.getAllJogs()
      override fun onCreate(savedInstanceState: Bundle?) {
